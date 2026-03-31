@@ -35,3 +35,5 @@ XEROVAA lets you create node cards representing different types of digital artif
 <img width="1918" height="986" alt="image" src="https://github.com/user-attachments/assets/3d2d7593-2577-48fa-95ec-85a79c3ddd8b" />
 <img width="1891" height="910" alt="image" src="https://github.com/user-attachments/assets/404b3e71-deb0-46df-a4d4-8e9a6f79cfd9" />
 <img width="1912" height="987" alt="image" src="https://github.com/user-attachments/assets/c1fa1331-26e7-4b08-923d-77773481bce0" />
+<img width="1666" height="901" alt="image" src="https://github.com/user-attachments/assets/4436a013-12c0-48a5-be29-e2f72390bace" />
+
