@@ -1,0 +1,226 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XEROVAA</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="rainLayer" class="rain-layer"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-glow"></div>
+
+    <!-- SETTINGS OVERLAY -->
+    <div id="settingsOverlay" class="settings-overlay hidden">
+      <div class="settings-panel">
+        <div class="settings-head">
+          <div class="settings-title">SETTINGS</div>
+          <button id="closeSettingsBtn" class="editor-close">×</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Color scheme</div>
+          <div class="scheme-row">
+            <button class="scheme-btn active" data-scheme="dark">
+              <span class="scheme-dot dark-dot"></span> Dark
+            </button>
+            <button class="scheme-btn" data-scheme="light">
+              <span class="scheme-dot light-dot"></span> Light
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">App rain</div>
+          <div class="toggle-wrap">
+            <span>Enable</span>
+            <button
+              id="rainToggle"
+              class="rain-toggle active"
+              aria-label="Toggle rain"
+            >
+              <span class="rain-toggle-knob"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Export HTML rain</div>
+          <div class="toggle-wrap">
+            <span>Include in export</span>
+            <button
+              id="exportRainToggle"
+              class="rain-toggle active"
+              aria-label="Toggle export rain"
+            >
+              <span class="rain-toggle-knob"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <div class="toolbar">
+        <button class="toolbar-btn" data-type="user">USER</button>
+        <button class="toolbar-btn" data-type="email">EMAIL</button>
+        <button class="toolbar-btn" data-type="social">SOCIAL</button>
+        <button class="toolbar-btn" data-type="phone">PHONE</button>
+        <button class="toolbar-btn" data-type="website">SITE</button>
+        <button class="toolbar-btn" data-type="other">OTHER</button>
+
+        <div class="toolbar-dot"></div>
+
+        <button id="autoLayoutBtn" class="toolbar-btn wide xv-anim">
+          <span class="span-mother"
+            ><span>L</span><span>A</span><span>Y</span><span>O</span
+            ><span>U</span><span>T</span></span
+          >
+          <span class="span-mother2"
+            ><span>L</span><span>A</span><span>Y</span><span>O</span
+            ><span>U</span><span>T</span></span
+          >
+        </button>
+
+        <button id="linkModeBtn" class="toolbar-btn wide xv-anim">
+          <span class="span-mother"
+            ><span>C</span><span>O</span><span>N</span><span>N</span
+            ><span>E</span><span>C</span><span>T</span></span
+          >
+          <span class="span-mother2"
+            ><span>C</span><span>O</span><span>N</span><span>N</span
+            ><span>E</span><span>C</span><span>T</span></span
+          >
+        </button>
+
+        <button id="deleteNodeBtn" class="toolbar-btn wide xv-anim">
+          <span class="span-mother"
+            ><span>D</span><span>E</span><span>L</span><span>E</span
+            ><span>T</span><span>E</span></span
+          >
+          <span class="span-mother2"
+            ><span>D</span><span>E</span><span>L</span><span>E</span
+            ><span>T</span><span>E</span></span
+          >
+        </button>
+
+        <button id="clearBtn" class="toolbar-btn wide xv-anim">
+          <span class="span-mother"
+            ><span>C</span><span>L</span><span>E</span><span>A</span
+            ><span>R</span></span
+          >
+          <span class="span-mother2"
+            ><span>C</span><span>L</span><span>E</span><span>A</span
+            ><span>R</span></span
+          >
+        </button>
+      </div>
+
+      <div class="topbar-right">
+        <div id="statusBar" class="status-mini">Ready</div>
+
+        <button id="saveBtn" class="save-btn dark xv-anim">
+          <span class="span-mother"
+            ><span>S</span><span>A</span><span>V</span><span>E</span
+            ><span> </span><span>J</span><span>S</span><span>O</span
+            ><span>N</span></span
+          >
+          <span class="span-mother2"
+            ><span>S</span><span>A</span><span>V</span><span>E</span
+            ><span> </span><span>J</span><span>S</span><span>O</span
+            ><span>N</span></span
+          >
+        </button>
+
+        <button id="exportBtn" class="save-btn xv-anim">
+          <span class="span-mother"
+            ><span>S</span><span>A</span><span>V</span><span>E</span
+            ><span> </span><span>H</span><span>T</span><span>M</span
+            ><span>L</span></span
+          >
+          <span class="span-mother2"
+            ><span>S</span><span>A</span><span>V</span><span>E</span
+            ><span> </span><span>H</span><span>T</span><span>M</span
+            ><span>L</span></span
+          >
+        </button>
+
+        <button id="settingsBtn" class="setting-btn" aria-label="Settings">
+          <span class="bar bar1"></span>
+          <span class="bar bar2"></span>
+          <span class="bar bar1"></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="brand-pill"># XEROVAA</div>
+
+    <main class="canvas-wrap">
+      <svg id="edgesSvg" class="edges-svg"></svg>
+      <div id="graphCanvas" class="graph-canvas"></div>
+
+      <div id="emptyState" class="empty-state">
+        <div class="empty-title">Create your first node</div>
+        <div class="empty-subtitle">
+          Enable connect mode to link cards together.
+        </div>
+      </div>
+
+      <div id="editorPanel" class="editor-panel hidden">
+        <div class="editor-head">
+          <div class="editor-title">Node editor</div>
+          <button id="closeEditorBtn" class="editor-close">×</button>
+        </div>
+
+        <label class="editor-label">
+          <span>Title</span>
+          <input id="nodeTitle" type="text" placeholder="Node title" />
+        </label>
+
+        <label class="editor-label">
+          <span>Value</span>
+          <textarea
+            id="nodeValue"
+            rows="5"
+            placeholder="Email, handle, URL, note..."
+          ></textarea>
+        </label>
+
+        <label class="editor-label">
+          <span>Tag</span>
+          <input id="nodeTag" type="text" placeholder="Optional tag" />
+        </label>
+        
+        <div class="editor-label">
+  <span>Label</span>
+  <div class="label-dots-row">
+    <button class="label-dot active" data-label="none"   title="None"></button>
+    <button class="label-dot"        data-label="red"    title="Critical"  style="--lc:#ef4444"></button>
+    <button class="label-dot"        data-label="orange" title="Important" style="--lc:#f97316"></button>
+    <button class="label-dot"        data-label="yellow" title="Note"      style="--lc:#eab308"></button>
+    <button class="label-dot"        data-label="green"  title="Safe"      style="--lc:#22c55e"></button>
+    <button class="label-dot"        data-label="blue"   title="Info"      style="--lc:#3b82f6"></button>
+    <button class="label-dot"        data-label="purple" title="Target"    style="--lc:#a855f7"></button>
+  </div>
+</div>
+
+        <div class="editor-actions">
+          <button id="applyNodeBtn" class="editor-btn primary xv-anim">
+            <span class="span-mother"
+              ><span>A</span><span>P</span><span>P</span><span>L</span
+              ><span>Y</span></span
+            >
+            <span class="span-mother2"
+              ><span>A</span><span>P</span><span>P</span><span>L</span
+              ><span>Y</span></span
+            >
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
