@@ -89,11 +89,6 @@ You can visually connect them, explore relationships, and export the result as a
 
 ---
 
-## 📁 Project Structure
-
-*(add your structure here)*
-
----
 
 ## 💡 Vision
 
