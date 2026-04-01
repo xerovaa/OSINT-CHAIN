@@ -34,6 +34,8 @@
     let exportRainEnabled = true;
     let suppressClickId = null;
     let currentTheme = "dark";
+    let hoveredNodeId = null;
+    let isolatedNodeId = null;
 
     // ── Undo stack ─────────────────────────────────────────────────────────────
     const xerovaa_undoStack = [];
@@ -59,6 +61,8 @@
         edges = prev.edges;
         selectedNodeId = null;
         pendingLinkId = null;
+        hoveredNodeId = null;
+        isolatedNodeId = null;
         xerovaa_showEditor(null);
         xerovaa_render();
         xerovaa_setStatus("Undone");
@@ -111,6 +115,19 @@
 
     function xerovaa_getNode(id) {
         return nodes.find((n) => n.id === id) || null;
+    }
+
+    function xerovaa_getConnectedNodeIds(id) {
+        const linked = new Set([id]);
+        for (const edge of edges) {
+            if (edge.from === id) linked.add(edge.to);
+            if (edge.to === id) linked.add(edge.from);
+        }
+        return linked;
+    }
+
+    function xerovaa_isEdgeRelated(edge, id) {
+        return !!id && (edge.from === id || edge.to === id);
     }
 
     // ── Theme ──────────────────────────────────────────────────────────────────
@@ -169,6 +186,8 @@
         nodeValue.value = "";
         nodeTag.value = "";
         document.querySelectorAll(".label-dot").forEach((d) => d.classList.remove("active"));
+        const noneDot = document.querySelector('.label-dot[data-label="none"]');
+        if (noneDot) noneDot.classList.add("active");
     }
 
     function xerovaa_fillEditor(node) {
@@ -228,6 +247,12 @@
         xerovaa_render();
     }
 
+    function xerovaa_toggleIsolation(id) {
+        isolatedNodeId = isolatedNodeId === id ? null : id;
+        xerovaa_render();
+        xerovaa_setStatus(isolatedNodeId ? "Focus mode enabled" : "Focus mode disabled");
+    }
+
     function xerovaa_deleteSelected() {
         if (!selectedNodeId) return;
         xerovaa_snapshot();
@@ -235,6 +260,8 @@
         edges = edges.filter((e) => e.from !== selectedNodeId && e.to !== selectedNodeId);
         selectedNodeId = null;
         pendingLinkId = null;
+        hoveredNodeId = null;
+        isolatedNodeId = null;
         xerovaa_showEditor(null);
         xerovaa_render();
         xerovaa_setStatus("Node deleted");
@@ -370,11 +397,25 @@
     // ── Render edges ───────────────────────────────────────────────────────────
     function xerovaa_renderEdges() {
         const paths = [];
+        const relatedId = hoveredNodeId || selectedNodeId;
+        const isolatedSet = isolatedNodeId ? xerovaa_getConnectedNodeIds(isolatedNodeId) : null;
+
         for (const edge of edges) {
             const from = xerovaa_getNode(edge.from);
             const to = xerovaa_getNode(edge.to);
             if (!from || !to) continue;
-            paths.push(`<path class="edge-path" d="${xerovaa_buildCurve(xerovaa_rightAnchor(from), xerovaa_leftAnchor(to))}"/>`);
+
+            const d = xerovaa_buildCurve(xerovaa_rightAnchor(from), xerovaa_leftAnchor(to));
+            const classes = ["edge-path"];
+
+            if (xerovaa_isEdgeRelated(edge, selectedNodeId)) classes.push("edge-selected");
+            if (xerovaa_isEdgeRelated(edge, hoveredNodeId)) classes.push("edge-hovered");
+            if (isolatedSet && !(isolatedSet.has(edge.from) && isolatedSet.has(edge.to))) classes.push("edge-muted");
+            if (isolatedSet && isolatedSet.has(edge.from) && isolatedSet.has(edge.to)) classes.push("edge-isolated");
+            if (relatedId && !xerovaa_isEdgeRelated(edge, relatedId) && !classes.includes("edge-muted")) classes.push("edge-dim");
+
+            paths.push(`<path class="${classes.join(" ")}" d="${d}"/>`);
+            paths.push(`<path class="edge-hit" data-edge-id="${xerovaa_esc(edge.id)}" d="${d}"/>`);
         }
         if (linkMode && pendingLinkId) {
             const from = xerovaa_getNode(pendingLinkId);
@@ -383,27 +424,47 @@
             }
         }
         svg.innerHTML = paths.join("");
+
+        svg.querySelectorAll('.edge-hit').forEach((pathEl) => {
+            pathEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const edgeId = pathEl.dataset.edgeId;
+                xerovaa_snapshot();
+                edges = edges.filter((edge) => edge.id !== edgeId);
+                xerovaa_render();
+                xerovaa_setStatus('Connection removed');
+            });
+        });
     }
 
     // ── Render nodes ───────────────────────────────────────────────────────────
     function xerovaa_renderNodes() {
+        const relatedId = hoveredNodeId || selectedNodeId;
+        const relatedSet = relatedId ? xerovaa_getConnectedNodeIds(relatedId) : null;
+        const isolatedSet = isolatedNodeId ? xerovaa_getConnectedNodeIds(isolatedNodeId) : null;
+
         canvas.innerHTML = nodes.map((node) => {
             const labelKey = node.label || "none";
             const labelMeta = xerovaa_labels[labelKey];
             const labelColor = labelMeta && labelMeta.color ? labelMeta.color : null;
 
-            const labelBadge = labelColor
-                ? `<div class="node-label-badge" style="background:${labelColor}22;border-color:${labelColor}55;color:${labelColor}">
-             ${xerovaa_esc(labelMeta.name)}
-           </div>`
-                : "";
+            const labelBadge = "";
 
             const labelGlow = labelColor
                 ? `box-shadow:inset 0 1px 0 rgba(255,255,255,0.03),0 18px 40px rgba(0,0,0,0.24),0 0 0 1px ${labelColor}33;border-color:${labelColor}55;`
                 : "";
 
+            const nodeClasses = ["node", node.type];
+            if (selectedNodeId === node.id) nodeClasses.push("selected");
+            if (hoveredNodeId === node.id) nodeClasses.push("hovered");
+            if (isolatedNodeId === node.id) nodeClasses.push("isolated-root");
+            if (relatedSet && relatedSet.has(node.id)) nodeClasses.push("related");
+            if (relatedSet && !relatedSet.has(node.id)) nodeClasses.push("dimmed");
+            if (isolatedSet && isolatedSet.has(node.id)) nodeClasses.push("isolated-visible");
+            if (isolatedSet && !isolatedSet.has(node.id)) nodeClasses.push("isolated-hidden");
+
             return `
-        <div class="node ${node.type} ${selectedNodeId === node.id ? "selected" : ""}"
+        <div class="${nodeClasses.join(" ")}"
              data-id="${xerovaa_esc(node.id)}"
              style="left:${node.x}px;top:${node.y}px;${labelGlow}">
           ${labelColor ? `<div class="node-label-line" style="background:${labelColor}"></div>` : ""}
@@ -465,14 +526,30 @@
                 if (e.button !== 0) return;
                 const node = xerovaa_getNode(id);
                 if (!node) return;
+                const rect = canvas.getBoundingClientRect();
                 dragState = {
                     id,
                     startMouseX: e.clientX,
                     startMouseY: e.clientY,
-                    offsetX: e.clientX - node.x,
-                    offsetY: e.clientY - node.y,
+                    offsetX: (e.clientX - rect.left) - node.x,
+                    offsetY: (e.clientY - rect.top) - node.y,
                     moved: false
                 };
+            });
+
+            el.addEventListener("mouseenter", () => {
+                if (dragState) return;
+                if (hoveredNodeId === id) return;
+                hoveredNodeId = id;
+                xerovaa_render();
+            });
+
+            el.addEventListener("mouseleave", () => {
+                if (dragState) return;
+                if (hoveredNodeId === id) {
+                    hoveredNodeId = null;
+                    xerovaa_render();
+                }
             });
 
             el.addEventListener("click", () => {
@@ -480,9 +557,8 @@
 
                 const now = Date.now();
                 if (lastClickId === id && now - lastClickTime < 380) {
-                    // Double click — open editor and focus title
                     xerovaa_selectNode(id);
-                    xerovaa_focusEditor();
+                    xerovaa_toggleIsolation(id);
                     lastClickId = null;
                     lastClickTime = 0;
                     return;
@@ -786,6 +862,8 @@ ${project.edges.length ? `
     canvas.addEventListener("click", (e) => {
         if (e.target !== canvas) return;
         selectedNodeId = null;
+        hoveredNodeId = null;
+        isolatedNodeId = null;
         xerovaa_showEditor(null);
         if (linkMode) {
             pendingLinkId = null;
@@ -810,8 +888,8 @@ ${project.edges.length ? `
         const dy = Math.abs(e.clientY - dragState.startMouseY);
         if (dx > 4 || dy > 4) dragState.moved = true;
 
-        node.x = e.clientX - dragState.offsetX;
-        node.y = e.clientY - dragState.offsetY - rect.top;
+        node.x = (e.clientX - rect.left) - dragState.offsetX;
+        node.y = (e.clientY - rect.top) - dragState.offsetY;
 
         const maxX = canvas.clientWidth - node.width - 12;
         const maxY = canvas.clientHeight - node.height - 12;
@@ -843,8 +921,10 @@ ${project.edges.length ? `
                 xerovaa_render();
                 return;
             }
-            if (selectedNodeId) {
+            if (selectedNodeId || isolatedNodeId) {
                 selectedNodeId = null;
+                hoveredNodeId = null;
+                isolatedNodeId = null;
                 xerovaa_showEditor(null);
                 xerovaa_render();
             }
