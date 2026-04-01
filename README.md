@@ -1,34 +1,118 @@
 # XEROVAA
 
-A dark-themed graph-based OSINT mapping tool built with Win32 + WebView2.
-Designed for visualizing and documenting relationships between digital identities, accounts, contacts, and metadata.
+**XEROVAA** is a modern graph-based OSINT visualization tool designed to map, explore, and present relationships between digital identities in a clean and interactive way.
+
+Built with **Win32 + WebView2**, it focuses on **visual clarity, smooth interaction, and export-ready reporting**.
 
 ---
 
-## What it does
+## ✨ Overview
 
-XEROVAA lets you create node cards representing different types of digital artifacts — users, emails, social accounts, phone numbers, websites, and notes — and visually connect them into a relationship graph. The result can be exported as a standalone HTML report.
+XEROVAA allows you to create structured relationship graphs using interactive node cards:
+
+* Users
+* Emails
+* Social accounts
+* Phone numbers
+* Websites
+* Notes / metadata
+
+You can visually connect them, explore relationships, and export the result as a **standalone interactive HTML report**.
+
+---
+
+## 🚀 Key Highlights
+
+* 🧠 **Interactive graph editor** — drag, connect, organize nodes freely
+* 🔗 **Relationship visualization** — clean curved edges with animations
+* 🎯 **Focus mode** — isolate nodes and highlight connections
+* 🏷️ **Smart labeling** — categorize nodes (Critical, Target, Info, etc.)
+* 🎨 **Dark / Light themes** — premium UI with smooth transitions
+* 🌧️ **Ambient effects** — optional rain overlay for visual depth
+* 💾 **Project system** — save & load full graph states (JSON)
+* 📤 **HTML export** — generate beautiful, shareable investigation reports
 
 ---
 
-## Features
+## 🧩 Features
 
-- **Node types** — User, Email, Social, Phone, Website, Other
-- **Visual graph** — drag nodes freely, connect them with curved animated edges
-- **Color labels** — mark nodes as Critical, Important, Note, Safe, Info, Target
-- **Connect mode** — click two nodes to link them
-- **Delete edge** — right-click any connection line to remove it
-- **Node isolation** — double-click a node to dim everything unrelated
-- **Connected highlight** — selecting a node highlights all its direct connections
-- **Auto layout** — force-directed algorithm arranges nodes automatically
-- **Undo** — Ctrl+Z steps back through the last 40 actions
-- **Rain toggle** — ambient rain animation, can be disabled
-- **Theme switcher** — Dark / Light color scheme
-- **Save JSON** — exports full graph state as a project file
-- **Load JSON** — restores a previously saved project
-- **Export HTML** — generates a self-contained OSINT report with hover effects, animated edges, and optional rain
+* **Node types**
+  User, Email, Social, Phone, Website, Other
+
+* **Graph interactions**
+
+  * Drag & reposition nodes
+  * Connect nodes via click-based linking
+  * Remove edges with right-click
+  * Double-click isolation mode
+  * Highlight connected nodes
+
+* **Layout system**
+
+  * Force-directed auto layout
+  * Manual + automatic positioning
+
+* **Editing tools**
+
+  * Node editor panel
+  * Label system (Critical, Important, Safe, etc.)
+  * Undo support (Ctrl+Z, up to 40 actions)
+
+* **Visual customization**
+
+  * Dark / Light theme
+  * Rain effect toggle
+
+* **Data & export**
+
+  * Save / load project as JSON
+  * Export standalone HTML report
+  * Fully portable output (no dependencies)
 
 ---
+
+## 📦 Use Cases
+
+* OSINT investigations
+* Identity mapping
+* Digital footprint analysis
+* Case documentation
+* Visual reporting for research
+
+---
+
+## 🏗️ Tech Stack
+
+* C++ (Win32)
+* WebView2 (UI layer)
+* HTML / CSS / JavaScript (graph rendering)
+
+---
+
+## 📁 Project Structure
+
+*(add your structure here)*
+
+---
+
+## 💡 Vision
+
+XEROVAA is designed to bridge the gap between **raw OSINT data** and **clear visual understanding**.
+
+Instead of lists and scattered notes, it provides a **structured, interactive environment** for building and presenting relationship chains.
+
+---
+
+## 📌 Status
+
+Early-stage project with active development.
+
+---
+
+## ⭐ Support
+
+If you find this project useful, consider starring the repository.
+
 
 ## Project structure
 <img width="1911" height="993" alt="image" src="https://github.com/user-attachments/assets/5b95db12-d7bf-47a3-80f0-541e8a20c097" />
